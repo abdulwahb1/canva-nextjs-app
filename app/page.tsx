@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useState } from "react";
 
 export default function Page() {
@@ -72,7 +73,7 @@ export default function Page() {
         )}
         {out?.thumbnail_url && (
           <div>
-            <img src={out.thumbnail_url} width={320} />
+            <Image alt="generated-image" src={out.thumbnail_url} width={320} />
           </div>
         )}
         {out?.cloudinary_url && (
