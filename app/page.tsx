@@ -30,56 +30,96 @@ export default function Page() {
   };
 
   return (
-    <main
-      style={{
-        maxWidth: 720,
-        margin: "24px auto",
-        padding: 16,
-        fontFamily: "sans-serif",
-      }}
-    >
-      <h1>Canva Autofill Demo</h1>
-      <button onClick={connect}>🔐 Connect Canva</button>
-      <form onSubmit={submit} style={{ marginTop: 16 }}>
-        <label>Template ID</label>
-        <input
-          value={templateId}
-          onChange={(e) => setTemplateId(e.target.value)}
-          required
-        />
-        <label>Title</label>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <label>Description</label>
-        <textarea
-          value={desc}
-          onChange={(e) => setDesc(e.target.value)}
-          required
-        />
-        <button type="submit" style={{ marginTop: 12 }}>
-          🎨 Generate
+    <main className="max-w-3xl mx-auto p-6 font-sans">
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">
+          Canva Autofill Demo
+        </h1>
+        <button
+          onClick={connect}
+          className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-white shadow-sm transition-colors hover:bg-indigo-700"
+        >
+          🔐 Connect Canva
         </button>
-      </form>
-      <div style={{ marginTop: 24 }}>
-        <div>{status}</div>
-        <pre>{out ? JSON.stringify(out, null, 2) : null}</pre>
+      </div>
+
+      <div className="rounded-xl border border-white/10 bg-white/5 p-5 shadow-sm backdrop-blur-sm">
+        <form onSubmit={submit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Template ID
+            </label>
+            <input
+              className="w-full rounded-md border border-white/10 bg-transparent px-3 py-2 outline-none ring-0 transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+              value={templateId}
+              onChange={(e) => setTemplateId(e.target.value)}
+              placeholder="e.g. CANVA-TEMPLATE-ID"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Title</label>
+            <input
+              className="w-full rounded-md border border-white/10 bg-transparent px-3 py-2 outline-none ring-0 transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Your design title"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Description
+            </label>
+            <textarea
+              className="min-h-24 w-full rounded-md border border-white/10 bg-transparent px-3 py-2 outline-none ring-0 transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+              placeholder="Short description for the design"
+              required
+            />
+          </div>
+          <div className="pt-2">
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-white shadow-sm transition-colors hover:bg-indigo-700"
+            >
+              🎨 Generate
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div className="mt-6 space-y-4">
+        <div className="text-sm text-white/70">{status}</div>
+        <pre className="max-h-80 overflow-auto rounded-md bg-black/70 p-4 text-xs text-green-300">
+          {out ? JSON.stringify(out, null, 2) : null}
+        </pre>
+
         {out?.design_url && (
-          <a href={out.design_url} target="_blank">
-            Open Canva Design
+          <a
+            className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-4 py-2 text-sm transition hover:bg-white/10"
+            href={out.design_url}
+            target="_blank"
+          >
+            Open Canva Design ↗
           </a>
         )}
+
         {out?.thumbnail_url && (
-          <div>
+          <div className="rounded-lg border border-white/10 bg-white/5 p-3">
             <Image alt="generated-image" src={out.thumbnail_url} width={320} />
           </div>
         )}
+
         {out?.cloudinary_url && (
           <div>
-            <a href={out.cloudinary_url} target="_blank">
-              Open Cloudinary Image
+            <a
+              className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-4 py-2 text-sm transition hover:bg-white/10"
+              href={out.cloudinary_url}
+              target="_blank"
+            >
+              Open Cloudinary Image ↗
             </a>
           </div>
         )}
