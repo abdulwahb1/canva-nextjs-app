@@ -15,6 +15,8 @@ export async function POST(req: Request) {
 
     const token = await getValidToken();
 
+    console.log("token", token);
+
     const data = {
       TITLE: { type: "text", text: title },
       DESCRIPTION: { type: "text", text: description },
