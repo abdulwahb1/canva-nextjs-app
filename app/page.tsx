@@ -1,29 +1,33 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Page() {
-  const [templateId, setTemplateId] = useState("");
-  const [templates, setTemplates] = useState<{ id: string; title: string }[]>(
-    []
-  );
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
-  const [useCustomId, setUseCustomId] = useState<boolean>(false);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [out, setOut] = useState<any>(null);
   const [status, setStatus] = useState("");
+  const [templatesOut, setTemplatesOut] = useState<any>(null);
+  const [templates, setTemplates] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+  const [useCustomId, setUseCustomId] = useState<boolean>(false);
+  const [templateId, setTemplateId] = useState("");
 
-  const connect = () => (window.location.href = "/api/auth/canva");
+  // const connect = () => (window.location.href = "/api/auth/canva"); // Commented for testing templated.io
 
   const submit = async (e: any) => {
     e.preventDefault();
     setStatus("Working...");
     setOut(null);
+
     const brandTemplateId = useCustomId
       ? templateId
       : selectedTemplateId || templateId;
-    const res = await fetch("/api/canva/autofill", {
+
+    // Testing templated.io API instead of Canva
+    const res = await fetch("/api/templated", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -37,15 +41,30 @@ export default function Page() {
     setOut(data);
   };
 
+  const listTemplates = async () => {
+    setStatus("Loading templates...");
+    setTemplatesOut(null);
+    const res = await fetch(
+      "/api/templated/templates?limit=10&includeLayers=true"
+    );
+    const data = await res.json();
+    setStatus(res.ok ? "Templates loaded" : "Error");
+    setTemplatesOut(data);
+  };
+
   useEffect(() => {
     const loadTemplates = async () => {
       try {
-        const res = await fetch("/api/canva/templates");
+        const res = await fetch("/api/templated/templates?limit=25");
         if (!res.ok) throw new Error("Failed to fetch templates");
         const data = await res.json();
-        if (data?.items?.length) {
-          setTemplates(data.items);
-          setSelectedTemplateId(data.items[0].id);
+        if (data?.success && data?.items?.length) {
+          const templateList = data.items.map((t: any) => ({
+            id: t.id,
+            name: t.name || t.title || `Template ${t.id}`,
+          }));
+          setTemplates(templateList);
+          setSelectedTemplateId(templateList[0].id);
         } else {
           setUseCustomId(true);
         }
@@ -62,13 +81,19 @@ export default function Page() {
     <main className="max-w-3xl mx-auto p-6 font-sans">
       <div className="flex items-center justify-between gap-4 mb-6">
         <h1 className="text-3xl font-bold tracking-tight">
-          Canva Autofill Demo
+          Templated.io Render Demo
         </h1>
-        <button
+        {/* <button
           onClick={connect}
           className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-white shadow-sm transition-colors hover:bg-indigo-700"
         >
           🔐 Connect Canva
+        </button> */}
+        <button
+          onClick={listTemplates}
+          className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-4 py-2 text-white shadow-sm transition-colors hover:bg-white/10"
+        >
+          📄 List Templates
         </button>
       </div>
 
@@ -93,7 +118,7 @@ export default function Page() {
                 >
                   {templates.map((t) => (
                     <option key={t.id} value={t.id}>
-                      {t.title}
+                      {t.name}
                     </option>
                   ))}
                   <option value="__custom__">Custom template ID…</option>
@@ -110,7 +135,7 @@ export default function Page() {
                   className="w-full rounded-md border border-white/10 bg-transparent px-3 py-2 outline-none ring-0 transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
                   value={templateId}
                   onChange={(e) => setTemplateId(e.target.value)}
-                  placeholder="e.g. CANVA-TEMPLATE-ID"
+                  placeholder="e.g. f8b6e5db-c207-4f85-b0cb-810cc7b47b42"
                   required
                 />
               </div>
@@ -154,6 +179,15 @@ export default function Page() {
         <pre className="max-h-80 overflow-auto rounded-md bg-black/70 p-4 text-xs text-green-300">
           {out ? JSON.stringify(out, null, 2) : null}
         </pre>
+
+        {/* {templatesOut && (
+          <div>
+            <div className="text-sm text-white/70">Templates API response</div>
+            <pre className="max-h-80 overflow-auto rounded-md bg-black/70 p-4 text-xs text-green-300">
+              {JSON.stringify(templatesOut, null, 2)}
+            </pre>
+          </div>
+        )} */}
 
         {out?.design_url && (
           <a
