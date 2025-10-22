@@ -33,7 +33,7 @@ export async function GET(req: Request) {
     const response = await fetch(upstreamUrl, {
       method: "GET",
       headers: {
-        Authorization: "Bearer 5f253f38-9770-40a7-8d87-0efba0920b6a",
+        Authorization: `Bearer ${process.env.TEMPLATED_KEY}`,
       },
       // No body for GET
     });
